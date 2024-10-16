@@ -29,15 +29,15 @@ The current starter templates are the following:
 
 Once you have an application up and running the next step is connecting to some data. Provided is a docker image you can run locally with some test data.
 
-_From within your new bonFHIR application_  
-Start the FHIR backend  
+_From within your new bonFHIR application_
+Start the FHIR backend
 `$ npm run fhir:start-server`
 
 Ensure the backend is running at [localhost:8100](http://localhost:8100)
 
 Authenticate with credentials `admin@example.com` / `medplum_admin` / Use "Default Project"
 
-Load some test data  
+Load some test data
 `npm run fhir:add-sample-data`
 
 **Note:** The following error occurs if using a version of Node prior to 18
@@ -74,3 +74,5 @@ export default function Home() {
   );
 }
 ```
+
+### Updated README.md
