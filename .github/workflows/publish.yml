@@ -1,12 +1,8 @@
-name: BonFHIR CI
+name: BonFHIR Publish
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    types: [opened, synchronize, reopened]
-
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+  release:
+    types: [published]
 
 env:
   DO_NOT_TRACK: 1
@@ -18,7 +14,9 @@ jobs:
     name: Build
     timeout-minutes: 30
     runs-on: ubuntu-latest
-
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -47,7 +45,7 @@ jobs:
       - name: Check & Test
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"
-        run: pnpm check && pnpm test
+        run: pnpm test-check
 
       - name: Prevent empty changesets
         run: pnpm changeset status --since=origin/main
@@ -62,7 +60,6 @@ jobs:
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
