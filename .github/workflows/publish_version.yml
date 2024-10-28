@@ -1,0 +1,70 @@
+name: BonFHIR Publish
+
+on:
+  release:
+    types: [published]
+
+env:
+  DO_NOT_TRACK: 1
+  TURBO_TELEMETRY_DISABLED: 1
+
+jobs:
+  Publish:
+    name: Publish Version
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Setup node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Create Release Pull Request or Publish to npm
+        uses: changesets/action@v1
+        with:
+          publish: pnpm packages:publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish Storybook
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: docs/storybook/dist
+          repository-name: bonfhir/storybook
+          branch: gh-pages
+          clean: true
+          token: ${{ secrets.STORYBOOK_PUBLISH_TOKEN }}
+          git-config-name: gh-actions
+          git-config-email: actions@github.com
+
+      - name: Authenticate SSH deploy key
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.GH_PAGES_DEPLOY }}
+
+      - name: Deploy website
+        env:
+          USE_SSH: true
+          DEPLOYMENT_BRANCH: main
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "gh-actions"
+          cd docs/website && pnpm run build && pnpm run deploy
