@@ -8,10 +8,11 @@
   ],
   "scripts": {
     "all": "pnpm build && pnpm check && pnpm test",
-    "build": "turbo run build",
+    "build": "turbo run build --affected",
     "check": "turbo run check",
     "codegen": "turbo run codegen",
     "dev": "turbo run dev",
+    "test-check": "turbo run test check -- --passWithNoTests",
     "dev:mantine": "turbo run dev --filter=@bonfhir/react --filter=@bonfhir/mantine --filter=@bonfhir/storybook --filter=@bonfhir/sample-ehr",
     "dev:website": "turbo run dev --filter=@bonfhir/website",
     "fhir:start-server": "docker run -p 8100:8100 -p 8103:8103 -v bonfhir_fhir_data:/var/lib/postgresql/15/main -v bonfhir_fhir_files:/usr/src/medplum/packages/server/dist/binary -e INITIAL_CLIENT_APP_REDIRECT_URI=http://localhost:3000/api/auth/callback/medplum --name bonfhir_fhir_server --rm -d ghcr.io/bonfhir/medplum-devbox:latest",
@@ -33,7 +34,7 @@
     "@graphql-codegen/cli": "^5.0.2",
     "graphql": "^16.8.1",
     "graphql-config": "^5.0.3",
-    "turbo": "^1.13.2"
+    "turbo": "^2.2.3"
   },
   "pnpm": {
     "overrides": {
@@ -74,5 +75,6 @@
   },
   "engines": {
     "node": ">=18.18.2"
-  }
+  },
+  "packageManager": "pnpm@9.12.2"
 }
